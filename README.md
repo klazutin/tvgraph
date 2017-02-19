@@ -1,5 +1,7 @@
 # TV Graph
 
+![Screenshot](http://lazut.in/img/github-tvgraph.png)
+
 A clone of [Graph TV](http://graphtv.kevinformatics.com/) built for educational purposes.
 Built with [Hug](http://www.hug.rest/), MongoDB, Beautiful Soup and Highcharts.
 
