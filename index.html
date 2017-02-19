@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>TV Graph</title>
+
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="hcr.js"></script>	
+
+	<style>
+		body {
+			font-family: 'Helvetica Neue','Helvetica','Arial',sans-serif; 
+			font-size: 18px; 
+			font-weight: 300;
+		}
+
+		a {
+			text-decoration: none;
+			color: #0275d8;
+		}
+
+		#tvGraph {
+			position: relative; 
+			width: 100%; 
+			top: 50%; 
+			text-align: center; 
+			font-size: 64px;
+		}		
+
+		#container {
+			display: none; 
+			width:100%; 
+			height:500px; 
+			min-width: 1080px;
+		}
+
+		#checkboxes {
+			display: none; 
+			width: 85%; 
+			text-align: center; 
+			margin-left: auto; 
+			margin-right: auto;
+		}		
+
+		#centerColumn {
+			width:30%; 
+			margin-left: auto; 
+			margin-right: auto;
+		}
+
+		.graphCheckbox {
+			display: inline-block; 
+			width:33%
+		}
+
+		#showPoster {
+			display: table-cell; 
+			vertical-align: middle; 
+			text-align: right;
+		}
+
+		#showTitle {
+			display: table-cell; 
+			vertical-align: middle; 
+			font-size:38px; 
+			font-weight:400; 
+			text-align: left;
+		}
+
+		#searchHint {
+			display:none; 
+			color:red; 
+			font-size: 12px;
+		}
+
+		#showQueryInput {
+			outline: none;
+			padding: 3px 0px 3px 3px;
+			margin: 5px 1px 3px 0px;
+			border: 1px solid #DDDDDD;
+			font-size: 18px;
+			font-family: 'Helvetica Neue','Helvetica','Arial',sans-serif;
+		}
+
+		#showQueryInput:focus {
+			padding: 3px 0px 3px 3px;
+			margin: 5px 1px 3px 0px;
+			border: 1px solid #0275d8;
+		}	
+
+		#submitButton {
+			border: 1px solid #d6d6d6;
+			background: #fff;
+			outline: none;
+			font-size:18px; 
+			font-family: 'Helvetica Neue','Helvetica','Arial',sans-serif; 
+			font-weight: 300;
+		}
+
+		#submitButton:hover:not([disabled]) {
+		    border-color: #0275d8;
+		}
+
+		#submitButton:focus:not([disabled]) {
+		    border-color: #0275d8;
+		    outline-width: 3px;
+		}
+
+		@media only screen and (max-width: 768px) {
+			#centerColumn {
+				width: 75%;
+			}
+			.graphCheckbox {
+				display:block;
+				width: initial;
+			}
+		}		
+
+		@media only screen and (max-width: 480px) {
+			#centerColumn {
+				width: 100%;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div id="placeholder" style="display: block; height:350px">
+		<div id="tvGraph">
+		TV Graph
+		</div>
+	</div>
+	<div id="container"></div>
+	<div id="checkboxes">
+		<div class="graphCheckbox">
+		<label><input type=checkbox id="scaleCheckbox" onclick="switchExtremes()">Scale Y Axis from 0 to 10</label>
+		</div>
+		<div class="graphCheckbox">
+		<label><input type=checkbox id="seasonCheckbox" onclick="switchTrendlines('season')" checked>Seasons trendlines</label>
+		</div>
+		<div class="graphCheckbox">
+		<label><input type=checkbox id="seriesCheckbox" onclick="switchTrendlines('series')">Series trendline</label>
+		</div>
+	</div>	
+	<br>
+	<br>
+	<div id="centerColumn">
+		<div id="loader" style="text-align: center;	display:none;"><img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" /></div>
+		<div style="display: table; width:100%;">
+			<div id="showTitle"></div>
+			<div id="showPoster"></div>
+		</div>
+		<br>
+		<hr id="chartHR" style="display: none;">
+		<br>
+		<div id="search" style="text-align: center;">
+			<form id="searchForm">
+			<span id="welcomeText">Enter name or ID of the show:</span>
+			<br>
+			<input name="showQueryInput" id="showQueryInput" type="text" autofocus />
+			<button id="submitButton">Search</button>
+			<div id="searchHint"></div>
+			</form>
+		</div>
+	</div>
+
+<script>
+var options = {
+	colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', 
+   '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
+	chart: {
+		renderTo: 'container',
+		type: 'scatter'
+	},
+	credits: false,
+	legend: {
+		itemStyle: {
+			fontFamily: 'Helvetica',
+		}
+	},
+	series: [{
+		cursor: 'pointer'
+	}],
+	title: {
+		useHTML: true,
+		style: {
+			fontFamily: 'Helvetica',
+			fontWeight: 400,
+			fontSize: '38px'
+		}
+	},
+	tooltip: {},
+	yAxis: [{
+		max: 10,
+		title: {
+			text: ''
+		}
+	},
+	],
+};
+
+window.onpopstate = function(e){
+    if(e.state){
+    	console.log(e);
+        prepareData(e.state.data);
+        showChart();
+    	document.getElementById('placeholder').style.display = 'none';
+        document.getElementById('showQueryInput').value = e.state.showQuery;
+    } else {
+    	hideChart();
+    	document.getElementById('placeholder').style.display = 'block';
+    	document.getElementById('showQueryInput').value = '';
+    	document.title = 'TV Graph';
+    }
+};
+
+window.onload = function(){
+	if (window.location.pathname != '/'){
+		getShow(window.location.pathname.slice(1));
+	}
+}
+
+document.getElementById('searchForm').onsubmit = function(event) {
+	event.preventDefault();
+	showQuery = document.getElementById('showQueryInput').value;
+	if (showQuery) {
+		document.getElementById('loader').style.display = 'block';
+		document.getElementById('showPoster').style.display = 'none'
+		document.getElementById('showTitle').style.display = 'none'
+		document.getElementById("submitButton").disabled = true;
+		document.getElementById("showQueryInput").disabled = true;
+		console.log('searching show ' + showQuery);
+		getShow(showQuery);
+	} else {
+		document.getElementById('searchHint').innerHTML='Please enter a search query!';
+		document.getElementById('searchHint').style.display = 'block';
+	}
+};
+
+function hideChart(){
+    document.getElementById('container').style.display = 'none';
+	document.getElementById('checkboxes').style.display = 'none';    
+	document.getElementById('showTitle').style.display = 'none';
+	document.getElementById('showPoster').style.display = 'none';
+	document.getElementById('chartHR').style.display = 'none';
+}
+
+function showChart(){
+	document.getElementById('container').style.display = 'block';
+	document.getElementById('checkboxes').style.display = 'block';    	
+	document.getElementById('showTitle').style.display = 'table-cell';
+	document.getElementById('showPoster').style.display = 'table-cell';
+	document.getElementById('chartHR').style.display = 'block';
+}
+
+function getShow(showQuery){
+	var xhr = new XMLHttpRequest();
+	xhr.responseType = 'json';
+	xhr.open("GET", "/search/" + showQuery);
+	xhr.onreadystatechange = function () {
+		if (this.readyState === 4) {
+			if (this.status === 200 && this.response) {
+		  		var data = JSON.parse(this.response);
+				prepareData(data);	
+				showChart();
+				document.getElementById('loader').style.display = 'none';
+				document.getElementById('searchHint').style.display = 'none';
+    			document.getElementById('placeholder').style.display = 'none';
+				document.getElementById("submitButton").disabled = false;
+				document.getElementById("showQueryInput").disabled = false;	
+				document.getElementById("showQueryInput").focus();
+				if (window.history.state == null || window.history.state.data.show_id != data.show_id){
+					window.history.pushState({data, showQuery},"", data.show_id);}
+			} else if (this.status === 200 && !this.response){
+				showChart();
+				document.getElementById('loader').style.display = 'none';
+				document.getElementById('searchHint').innerHTML='No results found.';
+				document.getElementById('searchHint').style.display = 'block';
+				document.getElementById("submitButton").disabled = false;
+				document.getElementById("showQueryInput").disabled = false;	
+				document.getElementById("showQueryInput").focus();
+				document.getElementById("showQueryInput").select();
+			} else {
+				document.getElementById('loader').style.display = 'none';
+				document.getElementById('searchHint').innerHTML='Can\'t communicate with the server.';
+				document.getElementById('searchHint').style.display = 'block';
+				document.getElementById("submitButton").disabled = false;
+				document.getElementById("showQueryInput").disabled = false;
+				document.getElementById("showQueryInput").focus();
+				document.getElementById("showQueryInput").select();			
+			}
+		}
+	};
+	xhr.send();
+}
+
+function prepareData(data) {
+	document.getElementById('showTitle').innerHTML = '<a href="//www.imdb.com/title/' + data.show_id + '" target="_blank">' + data.show_title + '<br><span style="font-size:80%">(' + data.show_year + ')' + '</span></a>';
+	document.getElementById('showPoster').innerHTML = '<a href="//www.imdb.com/title/' + data.show_id + '" target="_blank"><img src="data:image/jpg;base64,' + data.show_poster.$binary + '" /></a>';	
+	document.title = 'TV Graph - ' + data.show_title;
+	document.getElementById('scaleCheckbox').checked = false;
+	document.getElementById('seasonCheckbox').checked = true;
+	document.getElementById('seriesCheckbox').checked = false;
+
+	options.title.text = null;
+
+	options.tooltip.formatter = function() {return '<b>Season ' + this.point.season_number + '</b><br><b>Episode ' + this.point.episode_number + '</b><br>' + this.point.episode_title + '<br>Rating: ' + this.y + '<br>Votes: ' + this.point.episode_votes};	
+
+	options.series = []
+	var mergedData = []
+	var i = 0;
+	for (var ser in data.seasons) {
+		var seasonNum = Object.keys(data.seasons)[i].substring(1);
+		options.series[seasonNum-1] = {};
+		options.series[seasonNum-1].color = options.colors[(i+options.colors.length-1) % options.colors.length];
+		options.series[seasonNum-1].marker = {};
+		options.series[seasonNum-1].id = 'season-' + seasonNum;		
+		options.series[seasonNum-1].name = 'Season ' + seasonNum;
+		options.series[seasonNum-1].data = data.seasons[ser];
+		options.series[seasonNum-1].marker.symbol = 'circle';
+		options.series[seasonNum-1].cursor = 'pointer';
+		options.series[seasonNum-1].point = {};
+		options.series[seasonNum-1].point.events = {};
+		options.series[seasonNum-1].point.events.click = function(event) {window.open('http://www.imdb.com/title/' + this.episode_id)};
+		options.series[seasonNum-1].regression = true;
+		options.series[seasonNum-1].regressionSettings = {hideInLegend: true, disableMouseTracking: true};
+		mergedData = mergedData.concat(data.seasons[ser]);
+		i++;
+	};
+
+	chart = new Highcharts.Chart(options);
+
+	oldY = chart.yAxis[0].getExtremes().min;
+	oldYset = true;
+
+	seriesTrendline(mergedData);
+}
+
+function seriesTrendline(mergedData){
+	regression = _linear(mergedData, 2).points;
+	var regressionSeries = {
+        data: [regression[0], regression[regression.length - 1]],
+        color: 'black' ,
+        name: 'Series regression',
+        id: 'series-trendline',
+        lineWidth: 2,
+        marker: {enabled: false} ,
+        isRegressionLine: true,
+        type: 'line', 
+        enableMouseTracking: false,
+        showInLegend: false,
+        visible: false,
+	}
+	chart.addSeries(regressionSeries);
+}
+
+function switchTrendlines(type){
+	var str = chart.series.filter(function(o) {return o.userOptions.id == type + '-trendline'});
+	for (var s in str){
+		document.getElementById(type + 'Checkbox').checked == true ? str[s].setVisible(true, true) : str[s].setVisible(false, false);
+	}
+	chart.redraw();
+}
+
+function switchExtremes(){
+	oldYset ? (
+		chart.yAxis[0].setExtremes(0,10), oldYset = false
+	) : (
+		chart.yAxis[0].setExtremes(oldY, 10), oldYset = true
+	);
+}
+</script>
+</body>
+</html>
