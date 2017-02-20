@@ -22,19 +22,14 @@ dba.authenticate(MONGO_USER, MONGO_PASSWORD, mechanism='SCRAM-SHA-1')
 db = dba[MONGO_COLLECTION]
 
 
-class ShowValidator(object):
-    def __call__(self, value):
-        if value == "": return True
-        id_pattern = re.compile(r"^tt\d{7}$")
-        if not id_pattern.match(value):
-            raise ValueError('Not a proper show ID')
-
 @hug.get('/{show}', output=hug.output_format.html)
-def index(show: ShowValidator()):
-    with open('index.html') as f:
+def test(show):
+    id_pattern = re.compile(r"^tt\d{7}$")
+    if (show != "" and not id_pattern.match(show)): return hug.redirect.to('/')
+    with open ('index.html') as f:
         return f.read()
 
-@hug.get('/hcr.js', output=hug.output_format.text)
+@hug.get('/hcr.js', output=hug.output_format.html)
 def index():
     with open('hcr.js') as f:
         return f.read()  
