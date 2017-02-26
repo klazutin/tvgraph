@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from pymongo import MongoClient
-from bson.json_util import dumps
 import hug
 import re
 import urllib
 import datetime
+from pymongo import MongoClient
+from bson.json_util import dumps
 from bs4 import BeautifulSoup
 
 MONGO_HOST = '127.0.0.1'
@@ -25,18 +25,18 @@ db = dba[MONGO_COLLECTION]
 @hug.get('/{show}', output=hug.output_format.html)
 def test(show):
     id_pattern = re.compile(r"^tt\d{7}$")
-    if (show != "" and not id_pattern.match(show)): return hug.redirect.to('/')
-    with open ('index.html') as f:
+    if show != "" and not id_pattern.match(show): return hug.redirect.to('/')
+    with open('index.html') as f:
         return f.read()
 
 @hug.get('/hcr.js', output=hug.output_format.html)
 def index():
     with open('hcr.js') as f:
-        return f.read()  
+        return f.read()
 
 @hug.get('/favicon.ico', output=hug.output_format.ico_image)
 def index():
-    return 'favicon.ico'  
+    return 'favicon.ico'
 
 @hug.get('/search/{query}')
 def search(query):
@@ -68,7 +68,7 @@ def search_imdb(show_name):
     link = 'http://www.imdb.com/find?s=tt&ttype=tv&q=' + urllib.parse.quote(show_name)
     print('Getting search page: ' + link)
     page = urllib.request.urlopen(link).read()
-    print('Received search page')            
+    print('Received search page')
     soup = BeautifulSoup(page, 'lxml')
     print('parsing search page with soup')
     if not soup.find(class_="findList"):
@@ -82,7 +82,7 @@ def search_imdb(show_name):
 
 def get_show(show_id):
     """ Getting the show from our local DB using its ID.
-        If found, checking that it's a show and returning it. 
+        If found, checking that it's a show and returning it.
         This prevents unnecessary requests to IMDB for things that we know are not shows.
         If not found, we need to add it to DB by parsing its IMDB page.
     """
@@ -91,13 +91,13 @@ def get_show(show_id):
     except Exception:
         return False
     if doc:  # cache hit
-        return dumps(doc) if doc['show'] == True else False
+        return dumps(doc) if doc['show'] else False
     else:
         try:
             link = "http://www.imdb.com/title/" + show_id + "/epdate"
             print('Getting page ' + link)
             page = urllib.request.urlopen(link).read()
-            print('Received page')            
+            print('Received page')
             print("Cache miss, parsing page " + link)
             if parse_page(page, show_id):
                 print("Parsing completed, refreshing")
@@ -115,14 +115,13 @@ def parse_page(page, show_id):
         When done, requesting the show by ID again, knowing it's going to be in the database.
     """
     soup = BeautifulSoup(page, 'lxml')
-    season_episodes = {}
     seasons = {}
     if not soup.find('h4'):  # not a show
-        id = db.insert_one(
-        {
-            "show_id": show_id,
-            "show": False
-        })
+        mongo_id = db.insert_one(
+            {
+                "show_id": show_id,
+                "show": False
+            })
         return False
     print('Starting to parse')
     show_title = re.findall(r'"(.*?)"', soup.title.text)[0]
@@ -130,7 +129,7 @@ def parse_page(page, show_id):
     show_full_url = soup.find('link', {'rel': 'canonical'})['href']
     show_id = show_full_url.split('/')[4]
     show_poster_link = soup.find(id="primary-poster")['src']
-    show_poster = urllib.request.urlopen(show_poster_link).read() 
+    show_poster = urllib.request.urlopen(show_poster_link).read()
 
     seq_num = 0
     for tr in soup.table.find_all('tr'):
@@ -147,17 +146,17 @@ def parse_page(page, show_id):
             episode['episode_votes'] = int(td[3].text.replace(',', ''))
             episode['episode_id'] = td[1].find('a')['href'].split('/')[2]
             episode['x'] = seq_num
-            episode['y'] = float(td[2].text)            
+            episode['y'] = float(td[2].text)
             seasons.setdefault("_"+season_number, []).append(episode)  # some magic here
-    id = db.insert_one({
+    mongo_id = db.insert_one({
         "show" : True,
         "show_title" : show_title,
         "show_year" : show_year,
         "show_id" : show_id,
-        "show_poster" : show_poster,        
-        "created_at" : datetime.datetime.utcnow(),   
+        "show_poster" : show_poster,
+        "created_at" : datetime.datetime.utcnow(),
         "seasons": seasons
-        })    
+        })
     print('Parsing complete')
     return True
 
