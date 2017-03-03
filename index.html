@@ -146,7 +146,7 @@
 	<!--googleoff: snippet-->
 	<div id="checkboxes">
 		<div class="graphCheckbox">
-		<label><input type=checkbox id="scaleCheckbox" onclick="switchExtremes()">Scale Y Axis from 0 to 10</label>
+		<label><input type=checkbox id="scaleCheckbox" onclick="switchExtremes(this)">Scale Y Axis from 0 to 10</label>
 		</div>
 		<div class="graphCheckbox">
 		<label><input type=checkbox id="seasonCheckbox" onclick="switchSeasonTrendlines('')" checked>Seasons trendlines</label>
@@ -343,9 +343,6 @@ function prepareData(data) {
 
 	chart = new Highcharts.Chart(options);
 
-	oldY = chart.yAxis[0].getExtremes().min;
-	oldYset = true;
-
 	seriesTrendline(mergedData);
 }
 
@@ -391,12 +388,12 @@ function switchSeriesTrendline(){
 	chart.redraw();
 }
 
-function switchExtremes(){
-	oldYset ? (
-		chart.yAxis[0].setExtremes(0,10), oldYset = false
+function switchExtremes(that){
+	that.checked ? (
+		chart.yAxis[0].update({tickInterval: 1, min: 0})
 	) : (
-		chart.yAxis[0].setExtremes(oldY, 10), oldYset = true
-	);
+		chart.yAxis[0].update({tickInterval: null, min: null})
+	);	
 }
 </script>
 </body>
