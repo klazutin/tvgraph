@@ -1,0 +1,3 @@
+[submodule "highcharts-singleseries"]
+	path = highcharts-singleseries
+	url = https://github.com/klazutin/highcharts-singleseries

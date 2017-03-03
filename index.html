@@ -5,7 +5,8 @@
 	<title>TV Graph</title>
 
 	<script src="http://code.highcharts.com/highcharts.js"></script>
-	<script src="hcr.js"></script>	
+	<script src="hcr.js"></script>
+	<script src="singleseries.js"></script>	
 
 	<style>
 		body {
@@ -123,6 +124,16 @@
 			}
 		}
 	</style>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-27708703-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
 </head>
 
 <body>
@@ -138,10 +149,10 @@
 		<label><input type=checkbox id="scaleCheckbox" onclick="switchExtremes()">Scale Y Axis from 0 to 10</label>
 		</div>
 		<div class="graphCheckbox">
-		<label><input type=checkbox id="seasonCheckbox" onclick="switchTrendlines('season')" checked>Seasons trendlines</label>
+		<label><input type=checkbox id="seasonCheckbox" onclick="switchSeasonTrendlines('')" checked>Seasons trendlines</label>
 		</div>
 		<div class="graphCheckbox">
-		<label><input type=checkbox id="seriesCheckbox" onclick="switchTrendlines('series')">Series trendline</label>
+		<label><input type=checkbox id="seriesCheckbox" onclick="switchSeriesTrendline('')">Series trendline</label>
 		</div>
 	</div>	
 	<!--googleon: snippet-->
@@ -177,13 +188,12 @@ var options = {
 	},
 	credits: false,
 	legend: {
+		useHTML: true,
+		onlyEnabled: true,
 		itemStyle: {
 			fontFamily: 'Helvetica',
 		}
 	},
-	series: [{
-		cursor: 'pointer'
-	}],
 	title: {
 		useHTML: true,
 		style: {
@@ -357,10 +367,26 @@ function seriesTrendline(mergedData){
 	chart.addSeries(regressionSeries);
 }
 
-function switchTrendlines(type){
-	var str = chart.series.filter(function(o) {return o.userOptions.id == type + '-trendline'});
+function switchSeasonTrendlines(){
+	var str = chart.series.filter(function(o) {return o.userOptions.id == 'season-trendline'});
 	for (var s in str){
-		document.getElementById(type + 'Checkbox').checked == true ? str[s].setVisible(true, true) : str[s].setVisible(false, false);
+		if (document.getElementById('seasonCheckbox').checked == true){
+			if (str[s].linkedParent.visible) {str[s].setVisible(true, true)}
+		} else {
+			str[s].setVisible(false, false);
+		}
+	}
+	chart.redraw();
+}
+
+function switchSeriesTrendline(){
+	var str = chart.series.filter(function(o) {return o.userOptions.id == 'series-trendline'});
+	for (var s in str){
+		if (document.getElementById('seriesCheckbox').checked == true){
+			str[s].setVisible(true, true)
+		} else {
+			str[s].setVisible(false, false);
+		}
 	}
 	chart.redraw();
 }
@@ -372,15 +398,6 @@ function switchExtremes(){
 		chart.yAxis[0].setExtremes(oldY, 10), oldYset = true
 	);
 }
-
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-ga('create', 'UA-27708703-3', 'auto');
-ga('send', 'pageview');
-
 </script>
 </body>
 </html>

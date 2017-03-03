@@ -34,6 +34,11 @@ def index():
     with open('hcr.js') as f:
         return f.read()
 
+@hug.get('/singleseries.js', output=hug.output_format.html)
+def index():
+    with open('highcharts-singleseries/singleseries.js') as f:
+        return f.read()               
+
 @hug.get('/favicon.ico', output=hug.output_format.ico_image)
 def index():
     return 'favicon.ico'
