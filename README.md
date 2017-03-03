@@ -8,6 +8,7 @@ Built with [Hug](http://www.hug.rest/), MongoDB, Beautiful Soup and Highcharts.
 A couple of improvements over the original:
 - Relies on live scraping of IMDB pages to get the most current ratings.
 - Less dependencies (no jQuery, Bootstrap, etc.).
+- Allows to focus on a single season using the [Highcharts SingleSeries plugin](https://github.com/klazutin/highcharts-singleseries)
 
 To run:
 The easiest way to run locally is to use hug's built-in development server by running `hug -f ./app.py`.
