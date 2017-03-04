@@ -6,12 +6,12 @@
 
 	<script src="http://code.highcharts.com/highcharts.js"></script>
 	<script src="hcr.js"></script>
-	<script src="singleseries.js"></script>	
+	<script src="singleseries.js"></script>
 
 	<style>
 		body {
-			font-family: 'Helvetica Neue','Helvetica','Arial',sans-serif; 
-			font-size: 18px; 
+			font-family: 'Helvetica Neue','Helvetica','Arial',sans-serif;
+			font-size: 18px;
 			font-weight: 300;
 		}
 
@@ -21,57 +21,57 @@
 		}
 
 		#tvGraph {
-			position: relative; 
-			width: 100%; 
-			top: 50%; 
-			text-align: center; 
+			position: relative;
+			width: 100%;
+			top: 50%;
+			text-align: center;
 			font-size: 64px;
-		}		
+		}
 
 		#container {
-			display: none; 
-			width:100%; 
-			height:500px; 
+			display: none;
+			width:100%;
+			height:500px;
 			min-width: 1080px;
 		}
 
 		#checkboxes {
-			display: none; 
-			width: 85%; 
-			text-align: center; 
-			margin-left: auto; 
+			display: none;
+			width: 85%;
+			text-align: center;
+			margin-left: auto;
 			margin-right: auto;
-		}		
+		}
 
 		#centerColumn {
-			width:30%; 
+			width:30%;
             max-width: 400px;
-			margin-left: auto; 
+			margin-left: auto;
 			margin-right: auto;
 		}
 
 		.graphCheckbox {
-			display: inline-block; 
+			display: inline-block;
 			width:33%
 		}
 
 		#showPoster {
-			display: table-cell; 
-			vertical-align: middle; 
+			display: table-cell;
+			vertical-align: middle;
 			text-align: right;
 		}
 
 		#showTitle {
-			display: table-cell; 
-			vertical-align: middle; 
-			font-size:38px; 
-			font-weight:400; 
+			display: table-cell;
+			vertical-align: middle;
+			font-size:38px;
+			font-weight:400;
 			text-align: left;
 		}
 
 		#searchHint {
-			display:none; 
-			color:red; 
+			display:none;
+			color:red;
 			font-size: 12px;
 		}
 
@@ -88,14 +88,14 @@
 			padding: 3px 0px 3px 3px;
 			margin: 5px 1px 3px 0px;
 			border: 1px solid #0275d8;
-		}	
+		}
 
 		#submitButton {
 			border: 1px solid #d6d6d6;
 			background: #fff;
 			outline: none;
-			font-size:18px; 
-			font-family: 'Helvetica Neue','Helvetica','Arial',sans-serif; 
+			font-size:18px;
+			font-family: 'Helvetica Neue','Helvetica','Arial',sans-serif;
 			font-weight: 300;
 		}
 
@@ -116,7 +116,7 @@
 				display:block;
 				width: initial;
 			}
-		}		
+		}
 
 		@media only screen and (max-width: 480px) {
 			#centerColumn {
@@ -154,7 +154,7 @@
 		<div class="graphCheckbox">
 		<label><input type=checkbox id="seriesCheckbox" onclick="switchSeriesTrendline('')">Series trendline</label>
 		</div>
-	</div>	
+	</div>
 	<!--googleon: snippet-->
 	<br>
 	<br>
@@ -180,7 +180,7 @@
 
 <script>
 var options = {
-	colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', 
+	colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9',
    '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
 	chart: {
 		renderTo: 'container',
@@ -252,7 +252,7 @@ document.getElementById('searchForm').onsubmit = function(event) {
 
 function hideChart(){
     document.getElementById('container').style.display = 'none';
-	document.getElementById('checkboxes').style.display = 'none';    
+	document.getElementById('checkboxes').style.display = 'none';
 	document.getElementById('showTitle').style.display = 'none';
 	document.getElementById('showPoster').style.display = 'none';
 	document.getElementById('chartHR').style.display = 'none';
@@ -260,7 +260,7 @@ function hideChart(){
 
 function showChart(){
 	document.getElementById('container').style.display = 'block';
-	document.getElementById('checkboxes').style.display = 'block';    	
+	document.getElementById('checkboxes').style.display = 'block';
 	document.getElementById('showTitle').style.display = 'table-cell';
 	document.getElementById('showPoster').style.display = 'table-cell';
 	document.getElementById('chartHR').style.display = 'block';
@@ -274,13 +274,13 @@ function getShow(showQuery){
 		if (this.readyState === 4) {
 			if (this.status === 200 && this.response) {
 		  		var data = JSON.parse(this.response);
-				prepareData(data);	
+				prepareData(data);
 				showChart();
 				document.getElementById('loader').style.display = 'none';
 				document.getElementById('searchHint').style.display = 'none';
     			document.getElementById('placeholder').style.display = 'none';
 				document.getElementById("submitButton").disabled = false;
-				document.getElementById("showQueryInput").disabled = false;	
+				document.getElementById("showQueryInput").disabled = false;
 				document.getElementById("showQueryInput").focus();
 				if (window.history.state == null || window.history.state.data.show_id != data.show_id){
 					window.history.pushState({data, showQuery},"", data.show_id);}
@@ -290,7 +290,7 @@ function getShow(showQuery){
 				document.getElementById('searchHint').innerHTML='No results found.';
 				document.getElementById('searchHint').style.display = 'block';
 				document.getElementById("submitButton").disabled = false;
-				document.getElementById("showQueryInput").disabled = false;	
+				document.getElementById("showQueryInput").disabled = false;
 				document.getElementById("showQueryInput").focus();
 				document.getElementById("showQueryInput").select();
 			} else {
@@ -300,7 +300,7 @@ function getShow(showQuery){
 				document.getElementById("submitButton").disabled = false;
 				document.getElementById("showQueryInput").disabled = false;
 				document.getElementById("showQueryInput").focus();
-				document.getElementById("showQueryInput").select();			
+				document.getElementById("showQueryInput").select();
 			}
 		}
 	};
@@ -309,7 +309,7 @@ function getShow(showQuery){
 
 function prepareData(data) {
 	document.getElementById('showTitle').innerHTML = '<a href="//www.imdb.com/title/' + data.show_id + '" target="_blank">' + data.show_title + '<br><span style="font-size:80%">(' + data.show_year + ')' + '</span></a>';
-	document.getElementById('showPoster').innerHTML = '<a href="//www.imdb.com/title/' + data.show_id + '" target="_blank"><img src="data:image/jpg;base64,' + data.show_poster.$binary + '" /></a>';	
+	document.getElementById('showPoster').innerHTML = '<a href="//www.imdb.com/title/' + data.show_id + '" target="_blank"><img src="data:image/jpg;base64,' + data.show_poster.$binary + '" /></a>';
 	document.title = 'TV Graph - ' + data.show_title;
 	document.getElementById('scaleCheckbox').checked = false;
 	document.getElementById('seasonCheckbox').checked = true;
@@ -317,7 +317,7 @@ function prepareData(data) {
 
 	options.title.text = null;
 
-	options.tooltip.formatter = function() {return '<b>Season ' + this.point.season_number + '</b><br><b>Episode ' + this.point.episode_number + '</b><br>' + this.point.episode_title + '<br>Rating: ' + this.y + '<br>Votes: ' + this.point.episode_votes};	
+	options.tooltip.formatter = function() {return '<b>Season ' + this.point.season_number + '</b><br><b>Episode ' + this.point.episode_number + '</b><br>' + this.point.episode_title + '<br>Rating: ' + this.y + '<br>Votes: ' + this.point.episode_votes};
 
 	options.series = []
 	var mergedData = []
@@ -327,7 +327,7 @@ function prepareData(data) {
 		options.series[seasonNum-1] = {};
 		options.series[seasonNum-1].color = options.colors[(i+options.colors.length-1) % options.colors.length];
 		options.series[seasonNum-1].marker = {};
-		options.series[seasonNum-1].id = 'season-' + seasonNum;		
+		options.series[seasonNum-1].id = 'season-' + seasonNum;
 		options.series[seasonNum-1].name = 'Season ' + seasonNum;
 		options.series[seasonNum-1].data = data.seasons[ser];
 		options.series[seasonNum-1].marker.symbol = 'circle';
@@ -356,7 +356,7 @@ function seriesTrendline(mergedData){
         lineWidth: 2,
         marker: {enabled: false} ,
         isRegressionLine: true,
-        type: 'line', 
+        type: 'line',
         enableMouseTracking: false,
         showInLegend: false,
         visible: false,
@@ -368,7 +368,7 @@ function switchSeasonTrendlines(){
 	var str = chart.series.filter(function(o) {return o.userOptions.id == 'season-trendline'});
 	for (var s in str){
 		if (document.getElementById('seasonCheckbox').checked == true){
-			if (str[s].linkedParent.visible) {str[s].setVisible(true, true)}
+			if (str[s].linkedParent.visible) {str[s].setVisible(true, false)}
 		} else {
 			str[s].setVisible(false, false);
 		}
@@ -380,7 +380,7 @@ function switchSeriesTrendline(){
 	var str = chart.series.filter(function(o) {return o.userOptions.id == 'series-trendline'});
 	for (var s in str){
 		if (document.getElementById('seriesCheckbox').checked == true){
-			str[s].setVisible(true, true)
+			str[s].setVisible(true, false)
 		} else {
 			str[s].setVisible(false, false);
 		}
@@ -393,7 +393,7 @@ function switchExtremes(that){
 		chart.yAxis[0].update({tickInterval: 1, min: 0})
 	) : (
 		chart.yAxis[0].update({tickInterval: null, min: null})
-	);	
+	);
 }
 </script>
 </body>
