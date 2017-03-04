@@ -80,7 +80,8 @@
                 regression.rValue = Math.sqrt(regression.rSquared).toFixed(s.regressionSettings.decimalPlaces);
                 regression.rSquared = regression.rSquared.toFixed(s.regressionSettings.decimalPlaces);
                 regression.standardError = standardError(mergedData, regression.points).toFixed(s.regressionSettings.decimalPlaces);
-                extraSerie.data = regression.points ;
+                // extraSerie.data = regression.points;
+                extraSerie.data = [regression.points[0], regression.points[regression.points.length - 1]]
                 extraSerie.name = extraSerie.name.replace("%r2",regression.rSquared);
                 extraSerie.name = extraSerie.name.replace("%r",regression.rValue);
                 extraSerie.name = extraSerie.name.replace("%eq",regression.string);
