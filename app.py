@@ -54,7 +54,12 @@ def search(query):
     if id_pattern.match(query): return get_show(query)
 
     try:
-        doc = db.find_one({'$text': {'$search': '\"' + query + '\"'}})
+        doc = db.find_one(
+            {'$text': {'$search': '\"' + query + '\"'}}, 
+            { 'score': { '$meta': "textScore" }}
+        ).sort( 
+            { 'score': { '$meta': "textScore" } } 
+        );
     except Exception:
         return False
     if doc:
