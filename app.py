@@ -56,10 +56,9 @@ def search(query):
     try:
         doc = db.find_one(
             {'$text': {'$search': '\"' + query + '\"'}}, 
-            { 'score': { '$meta': "textScore" }}
-        ).sort( 
-            { 'score': { '$meta': "textScore" } } 
-        );
+            {'score': {'$meta': "textScore"}},
+            sort=[('score', {'$meta': 'textScore'})]
+        )  
     except Exception:
         return False
     if doc:
