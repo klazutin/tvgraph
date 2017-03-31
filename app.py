@@ -26,17 +26,18 @@ db = dba[MONGO_COLLECTION]
 def test(show):
     id_pattern = re.compile(r"^tt\d{7}$")
     if show != "" and not id_pattern.match(show): return hug.redirect.to('/')
-    with open('index.html') as f:
+    with open('index.html', encoding='utf-8') as f:
         return f.read()
 
 @hug.get('/hcr.js', output=hug.output_format.html)
 def index():
-    with open('hcr.js') as f:
+    with open('hcr.js', encoding='utf-8') as f:
+        print(f)
         return f.read()
 
 @hug.get('/singleseries.js', output=hug.output_format.html)
 def index():
-    with open('highcharts-singleseries/singleseries.js') as f:
+    with open('highcharts-singleseries/singleseries.js', encoding='utf-8') as f:
         return f.read()               
 
 @hug.get('/favicon.ico', output=hug.output_format.ico_image)
