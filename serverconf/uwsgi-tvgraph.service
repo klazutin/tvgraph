@@ -1,8 +1,0 @@
-[Unit]
-Description=uWSGI instance to serve TV Graph
-
-[Service]
-ExecStart=/bin/bash -c 'cd /opt/tvgraph; source venv/bin/activate; uwsgi --ini serverconf/uwsgi.ini'
-
-[Install]
-WantedBy=multi-user.target

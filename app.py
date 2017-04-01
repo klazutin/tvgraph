@@ -32,7 +32,6 @@ def test(show):
 @hug.get('/hcr.js', output=hug.output_format.html)
 def index():
     with open('hcr.js', encoding='utf-8') as f:
-        print(f)
         return f.read()
 
 @hug.get('/singleseries.js', output=hug.output_format.html)
